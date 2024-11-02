@@ -1,8 +1,17 @@
+:root {
+  --speed: 200;
+  pointer-events: none;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: forestgreen;
+}
+
 .positioned {
   --x: 0;
   --y: 0;
   --size: 5em;
-  --speed: 200;
   width: var(--size);
   height: var(--size);
   aspect-ratio: 1/1;
@@ -15,16 +24,24 @@
 
 .player {
   background-color: cadetblue;
+  border-radius: 50%;
 }
 
 .apple {
   width: 2em;
   height: 2em;
   background-color: red;
+  border-radius: 0.5em;
 }
 
 .box {
-  width: 4em;
-  height: 4em;
+  width: 4.2em;
+  height: 4.2em;
   background-color: burlywood;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  place-content: center;
+  border: 1px solid black;
+  border-radius: 0.25em;
+  gap: 0.1em;
 }
