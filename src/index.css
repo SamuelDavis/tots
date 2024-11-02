@@ -1,0 +1,30 @@
+.positioned {
+  --x: 0;
+  --y: 0;
+  --size: 5em;
+  --speed: 200;
+  width: var(--size);
+  height: var(--size);
+  aspect-ratio: 1/1;
+  position: absolute;
+  left: calc(var(--size) * var(--x));
+  top: calc(var(--size) * var(--y));
+  transition-property: top, left;
+  transition-duration: calc(1ms * var(--speed));
+}
+
+.player {
+  background-color: cadetblue;
+}
+
+.apple {
+  width: 2em;
+  height: 2em;
+  background-color: red;
+}
+
+.box {
+  width: 4em;
+  height: 4em;
+  background-color: burlywood;
+}
