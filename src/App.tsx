@@ -126,14 +126,17 @@ function App() {
   const [, setPointer] = createSignal<undefined | Point>();
 
   function onPointerDown(event: TouchEvent) {
-    setPointer({ x: event.clientX, y: event.clientY });
+    const { clientX: x, clientY: y } = event.targetTouches[0];
+    setPointer({ x, y });
   }
 
   function onPointerUp(event: TouchEvent) {
+    const { clientX: x, clientY: y } =
+      event.changedTouches[event.changedTouches.length - 1];
     setPointer((pointer) => {
       if (pointer) {
-        const dx = event.clientX - pointer.x;
-        const dy = event.clientY - pointer.y;
+        const dx = x - pointer.x;
+        const dy = y - pointer.y;
         if (Math.abs(dy) > Math.abs(dx))
           switch (norm(dy)) {
             case -1:
