@@ -125,11 +125,11 @@ function App() {
 
   const [, setPointer] = createSignal<undefined | Point>();
 
-  function onPointerDown(event: PointerEvent) {
+  function onPointerDown(event: MouseEvent) {
     setPointer({ x: event.clientX, y: event.clientY });
   }
 
-  function onPointerUp(event: PointerEvent) {
+  function onPointerUp(event: MouseEvent) {
     setPointer((pointer) => {
       if (pointer) {
         const dx = event.clientX - pointer.x;
@@ -163,8 +163,8 @@ function App() {
     document.documentElement.style.setProperty("--speed", speed.toString());
     window.addEventListener("keydown", onKeyDown);
     window.addEventListener("keyup", onKeyUp);
-    window.addEventListener("pointerdown", onPointerDown);
-    window.addEventListener("pointerup", onPointerUp);
+    window.addEventListener("mousedown", onPointerDown);
+    window.addEventListener("mouseup", onPointerUp);
     setState(
       produce((state) => {
         do {
@@ -180,8 +180,8 @@ function App() {
   onCleanup(() => {
     window.removeEventListener("keydown", onKeyDown);
     window.removeEventListener("keyup", onKeyUp);
-    window.removeEventListener("pointerdown", onPointerDown);
-    window.removeEventListener("pointerup", onPointerUp);
+    window.removeEventListener("mousedown", onPointerDown);
+    window.removeEventListener("mouseup", onPointerUp);
   });
 
   return (
