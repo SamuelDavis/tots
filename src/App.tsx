@@ -54,6 +54,17 @@ function inputToDelta(input: Input): Point {
   }
 }
 
+function createThrottle(callback: any, wait = 200) {
+  const [getIsThrottled, setIsThrottled] = createSignal(false);
+  return function (...args: any[]) {
+    if (!getIsThrottled()) {
+      setIsThrottled(true);
+      callback(...args);
+      setTimeout(() => setIsThrottled(false), wait);
+    }
+  };
+}
+
 function App() {
   const [input, setInput] = createStore<Input[]>([]);
   const [getAnimating, setAnimating] = createSignal(false);
@@ -125,49 +136,55 @@ function App() {
 
   const [, setPointer] = createSignal<undefined | Point>();
 
-  function onPointerDown(event: TouchEvent) {
+  function onTouchStart(event: TouchEvent) {
     const { clientX: x, clientY: y } = event.targetTouches[0];
     setPointer({ x, y });
   }
 
-  function onPointerUp(event: TouchEvent) {
-    const { clientX: x, clientY: y } =
-      event.changedTouches[event.changedTouches.length - 1];
+  function onTouchMove(event: TouchEvent) {
     setPointer((pointer) => {
-      if (pointer) {
-        const dx = x - pointer.x;
-        const dy = y - pointer.y;
-        if (Math.abs(dy) > Math.abs(dx))
-          switch (norm(dy)) {
-            case -1:
-              addInput("w");
-              break;
-            case +1:
-              addInput("s");
-              break;
-          }
-        if (Math.abs(dx) > Math.abs(dy))
-          switch (norm(dx)) {
-            case -1:
-              addInput("a");
-              break;
-            case +1:
-              addInput("d");
-              break;
-          }
-      }
-      return undefined;
+      if (!pointer) return;
+      const { clientX: x, clientY: y } =
+        event.changedTouches[event.changedTouches.length - 1];
+      const dx = x - pointer.x;
+      const dy = y - pointer.y;
+      if (Math.abs(dy) > Math.abs(dx))
+        switch (norm(dy)) {
+          case -1:
+            addInput("w");
+            break;
+          case +1:
+            addInput("s");
+            break;
+        }
+      if (Math.abs(dx) > Math.abs(dy))
+        switch (norm(dx)) {
+          case -1:
+            addInput("a");
+            break;
+          case +1:
+            addInput("d");
+            break;
+        }
+      return { x: pointer.x + dx / 2, y: pointer.y + dy / 2 };
     });
+  }
+
+  function onTouchEnd(_: TouchEvent) {
+    setPointer(undefined);
+    setInput([]);
   }
 
   createEffect(GameLoop);
 
+  const _onTouchMove = createThrottle(onTouchMove);
   onMount(() => {
     document.documentElement.style.setProperty("--speed", speed.toString());
     window.addEventListener("keydown", onKeyDown);
     window.addEventListener("keyup", onKeyUp);
-    window.addEventListener("touchstart", onPointerDown);
-    window.addEventListener("touchend", onPointerUp);
+    window.addEventListener("touchstart", onTouchStart);
+    window.addEventListener("touchmove", _onTouchMove);
+    window.addEventListener("touchend", onTouchEnd);
     setState(
       produce((state) => {
         do {
@@ -179,12 +196,14 @@ function App() {
         );
       }),
     );
-  });
-  onCleanup(() => {
-    window.removeEventListener("keydown", onKeyDown);
-    window.removeEventListener("keyup", onKeyUp);
-    window.removeEventListener("touchstart", onPointerDown);
-    window.removeEventListener("touchend", onPointerUp);
+
+    onCleanup(() => {
+      window.removeEventListener("keydown", onKeyDown);
+      window.removeEventListener("keyup", onKeyUp);
+      window.removeEventListener("touchstart", onTouchStart);
+      window.removeEventListener("touchmove", _onTouchMove);
+      window.removeEventListener("touchend", onTouchEnd);
+    });
   });
 
   return (
