@@ -1,7 +1,15 @@
+aside {
+  z-index: 100;
+  position: absolute;
+}
+
 :root {
   --speed: 200;
-  pointer-events: none;
   box-sizing: border-box;
+}
+
+main {
+  pointer-events: none;
 }
 
 body {
