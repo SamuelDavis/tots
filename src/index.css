@@ -8,6 +8,11 @@ aside {
   box-sizing: border-box;
 }
 
+html,
+body {
+  overscroll-behavior: none;
+}
+
 main {
   pointer-events: none;
 }

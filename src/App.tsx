@@ -206,45 +206,30 @@ function App() {
     });
   });
 
-  function onFullScreen() {
-    if (document.fullscreenElement) document.exitFullscreen();
-    else document.documentElement.requestFullscreen();
-  }
-
   return (
-    <>
-      <main>
-        <div class="box positioned" style={positionToCss(state.box)}>
-          <For each={Array(state.box.apples)}>
-            {() => <div class="apple" />}
-          </For>
-        </div>
-        <div class="player positioned" style={positionToCss(state.player)} />
+    <main>
+      <div class="box positioned" style={positionToCss(state.box)}>
+        <For each={Array(state.box.apples)}>{() => <div class="apple" />}</For>
+      </div>
+      <div class="player positioned" style={positionToCss(state.player)} />
+      <Show
+        when={!state.done}
+        fallback={
+          <dialog open>
+            <h1>You Win!</h1>
+          </dialog>
+        }
+      >
         <Show
-          when={!state.done}
+          when={state.player.hasApple}
           fallback={
-            <dialog open>
-              <h1>You Win!</h1>
-            </dialog>
+            <div class="apple positioned" style={positionToCss(state.apple)} />
           }
         >
-          <Show
-            when={state.player.hasApple}
-            fallback={
-              <div
-                class="apple positioned"
-                style={positionToCss(state.apple)}
-              />
-            }
-          >
-            <div class="apple positioned" style={positionToCss(state.apple)} />
-          </Show>
+          <div class="apple positioned" style={positionToCss(state.apple)} />
         </Show>
-      </main>
-      <aside>
-        <button onClick={onFullScreen}>Fullscreen</button>
-      </aside>
-    </>
+      </Show>
+    </main>
   );
 }
 
